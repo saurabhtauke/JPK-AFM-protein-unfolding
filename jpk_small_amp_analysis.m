@@ -3,6 +3,7 @@
 %This program converts the JPK output data files which are then compatible
 %with the MATLAB code for Data Analysis of the Protein unfolding Force
 %Spectroscopy experiments. MATLAB Code used for analysis...
+% Sooooper Jugaad xD
 %(https://github.com/saurabhtauke/Small-Amplitude-AFM/blob/master/analysis.m)
 
 clear all
@@ -145,7 +146,7 @@ figurename = figure;
 % plot(z_range,amplitude,'-b')
 % title('Amplitude')
 % xlabel('Distance(nm)')  
-% ylabel('Amplitude(Å)')
+% ylabel('Amplitude(Ã…)')
 
 
 % phase = phase.*180./pi;
@@ -160,14 +161,14 @@ figurename = figure;
 % plot(z_range,x_signal,'-b')
 % title('X')
 % xlabel('Distance(nm)')
-% ylabel('X(Å)')
+% ylabel('X(Ã…)')
 
 
 % subplot(4,2,4)
 % plot(z_range,y_signal,'-b')
 % title('Y')
 % xlabel('Distance(nm)')
-% ylabel('Y(Å)')
+% ylabel('Y(Ã…)')
 
 % subplot(4,2,5)
 % plot(z_range,stiffx,'-b')
