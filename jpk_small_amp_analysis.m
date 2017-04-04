@@ -3,7 +3,6 @@
 %This program converts the JPK output data files which are then compatible
 %with the MATLAB code for Data Analysis of the Protein unfolding Force
 %Spectroscopy experiments. MATLAB Code used for analysis...
-% Sooooper Jugaad xD
 %(https://github.com/saurabhtauke/Small-Amplitude-AFM/blob/master/analysis.m)
 
 clear all
@@ -12,7 +11,7 @@ clear all
 %navigate to the folder to list.
 % this assumes the standard format 'map-data-year.month.day-time.numbers.txt'
 
-list = ls('map*.txt')
+list = ls('f*.txt')
 
 %SOMEHOW PUT THIS INTO AN ARRAY OF STRINGS PLS PLS PLS
 array = cellstr(list);
@@ -67,32 +66,42 @@ lockin_sens = 10;                  % in mv
 cantilever_stiffness = springk(i);          % in N/m
 detection_sensitivity = sens(i);
 
-free_amplitude = 1 *10^-10;                % in m
-drive_frequency = 1000*2*pi;            % in Hz
+free_amplitude =  1*10^-10;                % in m
+
+list(i,:)
+drive_frequency = input('pls input frequency in hertz...')*2*pi;            % in Hz
 
 density = 2329;                     %density of material of cantilever
-cantilever_length = 350e-006;      %length of cantilver SI units
+
+cantilever_length = input('pls input cantilever length in microns...') *10^(-6);      %length of cantilver SI units
 cantilever_width = 35e-006;      %length of cantilver SI units
-area = cantilever_length*cantilever_width;                        %surface area of cantilever
+cantilever_thickness = input('pls input cantiver thickness in microns...')*10^(-6);    
+
+area = cantilever_thickness*cantilever_width;                        %surface area of cantilever
 
 lever_damping = 10e-006;
 
 %% Removing the approach values and rescaling the z_voltage values and converting to nanometers
 
-% trimm all the arrays to remove approach z values.
-
+%Import and allocate data
 temp= importdata(list(i,:));
 %temp= a.('data');
 
 z = temp(:,1);
 totlength = length(z);
 
+%trimming initial 50 points
+
+for n=1:50
+    temp(1,:) = [];
+    
+end
 
 %% data allocation
 
 z_range = temp(:,1);
-x_signal = temp(:,5)*(detection_sensitivity* lockin_sens/10000);
-y_signal = -temp(:,6)*(detection_sensitivity* lockin_sens/10000);
+x_signal = temp(:,5)*(detection_sensitivity* lockin_sens/(10*1000*cantilever_length));
+y_signal = -temp(:,6)*(detection_sensitivity* lockin_sens/(10*1000*cantilever_length));
 
 amplitude = sqrt(x_signal.^2 + y_signal.^2);
 phase = atan(y_signal./x_signal) ;                        
@@ -124,12 +133,12 @@ force = force - force(length(force));
 %% Plotting
 
 figureindex = num2str(i);
-%figurename = strcat('plotting ',figureindex);
+figurename = strcat('plotting ',figureindex);
 
 figurename = figure;
 
  %'please refer to code for plot_matrix labels'
- plot_matrix = zeros(length(z_range),12);
+ plot_matrix = zeros(length(z_range),11);
  plot_matrix(:,1) = z_range;
  plot_matrix(:,2) = amplitude;
  plot_matrix(:,3) = phase;
@@ -210,29 +219,57 @@ figurename = figure;
 
 %% PLOT 2
 
+% subplot(2,2,1)
+% plot(z_range,stiffx,'-b')
+% title('Stiffness by Altered Boundary Condition')
+% xlabel('Distance(nm)')
+% ylabel('Stiffness(N/m)')
+% 
+% subplot(2,2,2)
+% plot(z_range,dampy,'-b')
+% title('Damping by Altered Boundary Condition')
+% xlabel('Distance(nm)')
+% ylabel('Damping(Kg/s)')
+% 
+% subplot(2,2,3)
+% plot(z_range,force,'-b')
+% title('Force')
+% xlabel('Distance(nm)')
+% ylabel('Force(N)')
+% 
+% subplot(2,2,4)
+% plot(z_range,relaxation_time,'-b')
+% title('relaxation time')
+% xlabel('Distance(nm)')
+% ylabel('relaxation time')
+% 
+
+%% Plot 3
+
 subplot(2,2,1)
-plot(z_range,stiffx,'-b')
+plot(stiffx,'-b')
 title('Stiffness by Altered Boundary Condition')
 xlabel('Distance(nm)')
 ylabel('Stiffness(N/m)')
 
 subplot(2,2,2)
-plot(z_range,dampy,'-b')
+plot(dampy,'-b')
 title('Damping by Altered Boundary Condition')
 xlabel('Distance(nm)')
 ylabel('Damping(Kg/s)')
 
 subplot(2,2,3)
-plot(z_range,force,'-b')
+plot(force,'-b')
 title('Force')
 xlabel('Distance(nm)')
 ylabel('Force(N)')
 
 subplot(2,2,4)
-plot(z_range,relaxation_time,'-b')
+plot(relaxation_time,'-b')
 title('relaxation time')
 xlabel('Distance(nm)')
 ylabel('relaxation time')
+
 
 %HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 %HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
@@ -240,3 +277,5 @@ ylabel('relaxation time')
 
 
 end
+
+
