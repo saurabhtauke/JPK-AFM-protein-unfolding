@@ -2,11 +2,11 @@
 
 ultaforce = -(force);
 ultaforce = ultaforce-min(ultaforce);
-% ultaforce = detrend(ultaforce)
+%ultaforce = detrend(ultaforce)
 
 [pks,locs] = findpeaks(ultaforce);
 
-%tub = zeros(length(locs),1);
+tub = zeros(locs(length(locs)),1);
 for i = 1:length(locs)
 tub(locs(i))= ultaforce(locs(i));
 end
@@ -25,7 +25,7 @@ sep = -diff(ultaforce)*100/8;
 %find out peak and peak" around the point of largest difference
 
 modpeak = pks1;
-modlocs = locs1
+modlocs = locs1;
 
 for m = 1:length(locs1)
     if ultaforce(locs1(m)-1) > ultaforce(locs1(m));
@@ -34,7 +34,7 @@ for m = 1:length(locs1)
     end
 end
 
-%tub1 = zeros(length(locs1),1);
+tub1 = zeros(locs1(length(locs1)),1);
 for i = 1:length(locs1)
 tub1(modlocs(i))= ultaforce(modlocs(i));
 end
@@ -57,7 +57,7 @@ for m = 1:length(locs1)
     
 end
 
-%tub2 = zeros(length(locs1),1);
+tub2 = zeros(locs1(length(locs1)),1);
 for i = 1:length(locs1)
 tub2(diploc(i))= ultaforce(diploc(i));
 end
@@ -69,9 +69,10 @@ plot(ultaforce,'r.-')
 hold on
 plot (tub1,'bO')
 plot (tub2,'gO')
+%plot(force*100000000,'b.-')
 %plot(sep,'g')
 hold off
 
-shatru = ultaforce(modlocs) - ultaforce(diploc)
+shatru = ultaforce(modlocs) - ultaforce(diploc);
 figure
 hist(shatru,100)
