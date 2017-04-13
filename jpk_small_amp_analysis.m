@@ -11,7 +11,7 @@ clear all
 %navigate to the folder to list.
 % this assumes the standard format 'map-data-year.month.day-time.numbers.txt'
 
-list = ls('f*.txt')
+list = ls('map*.txt')
 
 %SOMEHOW PUT THIS INTO AN ARRAY OF STRINGS PLS PLS PLS
 array = cellstr(list);
@@ -53,9 +53,9 @@ for i = 1: length(array)
 end
 
 %%
-%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH A E S T H E T I C
+%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
 for i = 1 :length(array)
     
@@ -66,16 +66,23 @@ lockin_sens = 10;                  % in mv
 cantilever_stiffness = springk(i);          % in N/m
 detection_sensitivity = sens(i);
 
-free_amplitude =  1*10^-10;                % in m
+%free_amplitude =  1*10^-10;                % in m
 
 list(i,:)
-drive_frequency = input('pls input frequency in hertz...')*2*pi;            % in Hz
 
+put = input('kuch bhi...');
+
+%drive_frequency = input('pls input frequency in hertz...')*2*pi;            % in Hz
+drive_frequency = 1200*2*pi;
 density = 2329;                     %density of material of cantilever
 
-cantilever_length = input('pls input cantilever length in microns...') *10^(-6);      %length of cantilver SI units
+%cantilever_length = input('pls input cantilever length in microns...') *10^(-6);      %length of cantilver SI units
+cantilever_length = 350*10^(-6);
+
 cantilever_width = 35e-006;      %length of cantilver SI units
-cantilever_thickness = input('pls input cantiver thickness in microns...')*10^(-6);    
+
+%cantilever_thickness = input('pls input cantiver thickness in microns...')*10^(-6);    
+cantilever_thickness = 2*10^(-6);
 
 area = cantilever_thickness*cantilever_width;                        %surface area of cantilever
 
@@ -84,28 +91,39 @@ lever_damping = 10e-006;
 %% Removing the approach values and rescaling the z_voltage values and converting to nanometers
 
 %Import and allocate data
-temp= importdata(list(i,:));
-%temp= a.('data');
+temp= importdata(list(i,:),' ',10);
+temp1= temp.('data');
 
-z = temp(:,1);
+z = temp1(:,1);
 totlength = length(z);
 
 %trimming initial 50 points
 
 for n=1:50
-    temp(1,:) = [];
+    temp1(1,:) = [];
     
 end
 
 %% data allocation
 
-z_range = temp(:,1);
-x_signal = temp(:,5)*(detection_sensitivity* lockin_sens/(10*1000*cantilever_length));
-y_signal = -temp(:,6)*(detection_sensitivity* lockin_sens/(10*1000*cantilever_length));
+z_range = temp1(:,1);
+
+x_signal = temp1(:,5)*(detection_sensitivity* lockin_sens/(10*1000));
+x1 = mean(x_signal((length(x_signal)-100):length(x_signal)));
+
+y_signal = -temp1(:,6)*(detection_sensitivity* lockin_sens/(10*1000));
+y1 = mean(y_signal((length(y_signal)-100):length(y_signal)));
+
+
+x_signal = temp1(:,5)*(detection_sensitivity* lockin_sens/(10*1000*cantilever_length));
+y_signal = -temp1(:,6)*(detection_sensitivity* lockin_sens/(10*1000*cantilever_length));
+
 
 amplitude = sqrt(x_signal.^2 + y_signal.^2);
+free_amplitude = sqrt(x1^2 + y1^2);
+
 phase = atan(y_signal./x_signal) ;                        
-force = temp(:,2);            
+force = temp1(:,2);            
 
 %% Stiffness and Damping calculation   
 
@@ -118,13 +136,14 @@ damping = double(cantilever_stiffness * (1.0) * ((free_amplitude./(amplitude.*(d
 
 
 stiffx = double(-1)*(((0.666*cantilever_stiffness * cantilever_length).*x_signal./free_amplitude)- 0.333*density*10*area*cantilever_length*drive_frequency*drive_frequency);
-stiffx = stiffx - min(stiffx);
-
+%stiffx = stiffx - min(stiffx);
+free_stiff = mean(stiffx((length(stiffx)-100):length(stiffx)));
+stiffx = stiffx-free_stiff;
 
 dampy = double((0.666*cantilever_stiffness*cantilever_length.*y_signal./(free_amplitude.*drive_frequency))- (0.333*lever_damping));
 %dampy = double((0.666*cantilever_stiffness*cantilever_length.*y_signal./(free_amplitude.*drive_frequency)));
-
-%dampy = dampy- min(dampy);
+free_damp = mean(dampy((length(dampy)-100):length(dampy)));
+dampy = dampy - free_damp;
 
 relaxation_time = double(dampy./(stiffx));
 
@@ -248,6 +267,7 @@ figurename = figure;
 
 subplot(2,2,1)
 plot(stiffx,'-b')
+hold on
 title('Stiffness by Altered Boundary Condition')
 xlabel('Distance(nm)')
 ylabel('Stiffness(N/m)')
@@ -271,10 +291,9 @@ xlabel('Distance(nm)')
 ylabel('relaxation time')
 
 
-%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-
+%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH A E S T H E T I C
+%HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
 end
 
