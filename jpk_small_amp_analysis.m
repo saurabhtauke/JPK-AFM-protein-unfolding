@@ -121,7 +121,7 @@ stiffx = double(-1)*(((0.666*cantilever_stiffness * cantilever_length).*x_signal
 stiffx = stiffx - min(stiffx);
 
 
-dampy = double((0.666*cantilever_stiffness*cantilever_length.*y_signal./(free_amplitude.*drive_frequency))- (0.333*lever_damping*cantilever_length));
+dampy = double((0.666*cantilever_stiffness*cantilever_length.*y_signal./(free_amplitude.*drive_frequency))- (0.333*lever_damping));
 %dampy = double((0.666*cantilever_stiffness*cantilever_length.*y_signal./(free_amplitude.*drive_frequency)));
 
 %dampy = dampy- min(dampy);
