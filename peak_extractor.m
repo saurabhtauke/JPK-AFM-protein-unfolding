@@ -145,9 +145,29 @@ combolen = max(len);
 %3 layers... first is force, 2nd is stiffness, 3rd is damping
 combo = zeros(combolen,2,3); 
 
-combo(:,:,1) = force_dat;
-combo(:,:,2) = stiff_dat;
-combo(:,:,3) = damp_dat;
+index =1;
+for i = 1:size(force_dat,1)
+    combo(index,1,1) = force_dat(index,1);
+    combo(index,2,1) = force_dat(index,2)
+    index = index+1;
+end
+
+
+index =1;
+for i = 1:size(force_dat,1)
+    combo(index,1,1) = stiff_dat(index,1);
+    combo(index,2,1) = stiff_dat(index,2)
+    index = index+1;
+end
+
+
+index =1;
+for i = 1:size(force_dat,1)
+    combo(index,1,1) = damp_dat(index,1);
+    combo(index,2,1) = damp_dat(index,2)
+    index = index+1;
+end
+
 
 %  fid = fopen('data1.mat','w');
 %     fprintf(fid,combo);
