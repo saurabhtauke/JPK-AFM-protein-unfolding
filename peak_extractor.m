@@ -16,7 +16,7 @@ dcm_obj = datacursormode(fig1);
 disp('click on the datapoint')
 disp('input 1 for storing the data')
 disp('input 0 for storing the data as 0')
-disp('input any other number to exit')
+disp('input any other NUMBER to exit')
 
 rubbish = input('...');
 
@@ -68,6 +68,8 @@ force_dat = f_dat1-f_dat2;
 
 %% Stiffness
 
+stiff_dat = zeros(length(force_dat),2);
+
 fig2 = figure
 plot (stiffx)
 title('stiffness')
@@ -102,6 +104,8 @@ end
 hold off
 %% Dissipation
 
+damp_dat = zeros(length(force_dat),2);
+
 fig3 = figure
 plot (dampy)
 title('dampy');
@@ -129,7 +133,7 @@ if rubbish == 0
     damp_dat(jindex,2) = 0;
 end
 
-plot(damp_dat(:,1),damp_dat(:,2),'ro')
+plot(damp_dat(:,1),damp_dat(:,2),'ro') 
 
 rubbish = input('ZERO or ONE...batao... ')
 end
@@ -139,39 +143,16 @@ hold off
 
 %% write to file
 
-len = [length(force_dat),length(stiff_dat),length(damp_dat)];
-combolen = max(len);
+peak_dat = struct('force',force_dat,'stiffness',stiff_dat,'damping',damp_dat);
 
-%3 layers... first is force, 2nd is stiffness, 3rd is damping
-combo = zeros(combolen,2,3); 
-
-index =1;
-for i = 1:size(force_dat,1)
-    combo(index,1,1) = force_dat(index,1);
-    combo(index,2,1) = force_dat(index,2)
+index = 1;
+peak_num = zeros(length(force_dat),1);
+for i = 1:length(force_dat)
+    peak_num(index) = index;
     index = index+1;
 end
 
-
-index =1;
-for i = 1:size(force_dat,1)
-    combo(index,1,1) = stiff_dat(index,1);
-    combo(index,2,1) = stiff_dat(index,2)
-    index = index+1;
-end
-
-
-index =1;
-for i = 1:size(force_dat,1)
-    combo(index,1,1) = damp_dat(index,1);
-    combo(index,2,1) = damp_dat(index,2)
-    index = index+1;
-end
-
-
-%  fid = fopen('data1.mat','w');
-%     fprintf(fid,combo);
-%     fclose(fid);
+combo = [peak_num peak_dat.force peak_dat.stiffness peak_dat.damping]
 
 %close(fig1)
 %close(fig2)
