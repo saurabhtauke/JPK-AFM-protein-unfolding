@@ -64,6 +64,7 @@ cantilever_width = input('pls input cantilever width in microns...') *10^(-6);  
 cantilever_thickness = input('pls input cantiver thickness in microns...')*10^(-6);    
 
 permission = input('input a number to continue...');
+file_index
 
 for file_index = 1 :length(array)
     
@@ -181,7 +182,7 @@ figurename = figure;
 % plot(z_range,amplitude,'-b')
 % title('Amplitude')
 % xlabel('Distance(nm)')  
-% ylabel('Amplitude(Å)')
+% ylabel('Amplitude(Ã…)')
 
 
 % phase = phase.*180./pi;
@@ -196,14 +197,14 @@ figurename = figure;
 % plot(z_range,x_signal,'-b')
 % title('X')
 % xlabel('Distance(nm)')
-% ylabel('X(Å)')
+% ylabel('X(Ã…)')
 
 
 % subplot(4,2,4)
 % plot(z_range,y_signal,'-b')
 % title('Y')
 % xlabel('Distance(nm)')
-% ylabel('Y(Å)')
+% ylabel('Y(Ã…)')
 
 % subplot(4,2,5)
 % plot(z_range,stiffx,'-b')
@@ -303,8 +304,10 @@ ylabel('relaxation time')
 %HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 
 
+xx = input('Do you want to analyse this curve? (y/n)...','s')
 
-
+if xx == 'y'
+    
 %Data Analysis Program
 
 %AIM: to retrive data from DATA_CURSOR on plots.
@@ -321,63 +324,64 @@ datacursormode on
 
 dcm_obj = datacursormode(fig1);
 disp('click on the datapoint')
-disp('input 1 for storing the data')
-disp('input 0 for storing the data as 0')
-disp('input any other NUMBER to exit')
+% disp('input 1 for storing the data')
+% disp('input 0 for storing the data as 0')
+% disp('input any other NUMBER to exit')
 
 rubbish = input('...');
 
 jindex = 0;
 
-while rubbish == 1 || rubbish ==0
+while rubbish == 1 || rubbish ==0 || rubbish == 11
     jindex = jindex+1;
 
     c_info = getCursorInfo(dcm_obj);
-    yum = c_info.Position
+    yum = c_info.Position;
 
-f_dat1(jindex,1,file_index) = yum(1);
-f_dat1(jindex,2,file_index) = yum(2);
+f_dat1(jindex,1) = yum(1);
+f_dat1(jindex,2) = yum(2);
 
 if rubbish ==0
-    f_dat(jindex,2,file_index) = 0;
+    f_dat(jindex,2) = 0;
 end
 
-plot(f_dat1(:,1,file_index),f_dat1(:,2,file_index),'ro')
+plot(f_dat1(:,1),f_dat1(:,2),'ro')
 
-rubbish = input('ZERO or ONE...batao... ')
+rubbish = input('ZERO or ONE...batao... ');
 end
 
 jindex = 0;
 
 rubbish = input('input 0 or 1...');
 
-while rubbish == 1 || rubbish == 0
+while rubbish == 1 || rubbish == 0 || rubbish ==11
     jindex = jindex+1;
 
     c_info = getCursorInfo(dcm_obj);
-    yum = c_info.Position
+    yum = c_info.Position;
 
-f_dat2(jindex,1,file_index) = yum(1);
-f_dat2(jindex,2,file_index) = yum(2);
+f_dat2(jindex,1) = yum(1);
+f_dat2(jindex,2) = yum(2);
 
 if rubbish == 0
-    f_dat2(jindex,2,file_index) = 0;
+    f_dat2(jindex,2) = 0;
 end
 
-plot(f_dat2(:,1,file_index),f_dat2(:,2,file_index),'go')
+plot(f_dat2(:,1),f_dat2(:,2),'go')
 
-rubbish = input('ZERO or ONE...batao... ')
+rubbish = input('ZERO or ONE...batao... ');
 end
  
 hold off
  
-force_dat = f_dat1-f_dat2;
+force_dat(:,1) = f_dat1(:,1);
+force_dat(:,2) = f_dat1(:,2)-f_dat2(:,2)
 
 %% Stiffness
 
-stiff_dat = zeros(length(force_dat),2,length(array));
+stiff_dat = zeros(length(force_dat),2);
 
-fig2 = figure
+fig2 = figure;
 plot (stiffx)
 title('stiffness')
 hold on
@@ -390,30 +394,32 @@ rubbish = input('input 0 or 1...');
 
 jindex = 0;
 
-while rubbish == 1 || rubbish == 0
+while rubbish == 1 || rubbish == 0 || rubbish == 11
     jindex = jindex+1;
 
     c_info = getCursorInfo(dcm_obj);
-    yum = c_info.Position
+    yum = c_info.Position;
 
-stiff_dat(jindex,1,file_index) = yum(1);
-stiff_dat(jindex,2,file_index) = yum(2);
+stiff_dat(jindex,1) = yum(1);
+stiff_dat(jindex,2) = yum(2);
 
 if rubbish ==0
-    stiff_dat (jindex,2,file_index) = 0;
+    stiff_dat (jindex,2) = 0;
 end
 
-plot(stiff_dat(:,1,file_index),stiff_dat(:,2,file_index),'ro')
+plot(stiff_dat(:,1),stiff_dat(:,2),'ro')
 
-rubbish = input('ZERO or ONE...batao... ')
+rubbish = input('ZERO or ONE...batao... ');
 end
+
+stiff_dat
 
 hold off
 %% Dissipation
 
-damp_dat = zeros(length(force_dat),2,length(array));
+damp_dat = zeros(length(force_dat),2);
 
-fig3 = figure
+fig3 = figure;
 plot (dampy)
 title('dampy');
 hold on
@@ -427,36 +433,38 @@ rubbish = input('input 0 or 1...');
 
 jindex = 0;
 
-while rubbish == 1 || rubbish ==0
+while rubbish == 1 || rubbish ==0 || rubbish == 11
     jindex = jindex+1;
 
     c_info = getCursorInfo(dcm_obj);
-    yum = c_info.Position
+    yum = c_info.Position;
 
-damp_dat(jindex,1,file_index) = yum(1);
-damp_dat(jindex,2,file_index) = yum(2);
+damp_dat(jindex,1) = yum(1);
+damp_dat(jindex,2) = yum(2);
 
 if rubbish == 0
-    damp_dat(jindex,2,file_index) = 0;
+    damp_dat(jindex,2) = 0;
 end
 
-plot(damp_dat(:,1,file_index),damp_dat(:,2,file_index),'ro') 
+plot(damp_dat(:,1),damp_dat(:,2),'ro') 
 
-rubbish = input('ZERO or ONE...batao... ')
+rubbish = input('ZERO or ONE...batao... ');
 end
  
+damp_dat
+
 hold off
 
 
 %% write to file
 
-v = genvarname('peak_dat',who);
-rite = struct('force',force_dat(:,:,file_index),'stiffness',stiff_dat(:,:,file_index),'damping',damp_dat(:,:,file_index));
+v = ['peak_dat' num2str(file_index)];
+rite = struct('force',force_dat,'stiffness',stiff_dat,'damping',damp_dat);
 eval([v ' = rite']);
 
 index = 1;
-peak_num = zeros(length(force_dat(:,:,file_index)),1);
-for i = 1:length(force_dat(:,:,file_index))
+peak_num = zeros(length(force_dat(:,:)),1);
+for i = 1:length(force_dat(:,:))
     peak_num(index) = index;
     index = index+1;
 end
@@ -471,6 +479,13 @@ close(fig1)
 close(fig2)
 close(fig3)
 
+clear f_dat1
+clear f_dat2
+clear force_dat
+clear stiff_dat
+clear damp_dat
+
+end
 
 %HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 %HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH A E S T H E T I C
@@ -478,6 +493,7 @@ close(fig3)
 
 
 permission = input('input a number to continue...');
+close(figurename)
 
 end
 
