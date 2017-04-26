@@ -154,6 +154,10 @@ end
 
 combo = [peak_num peak_dat.force peak_dat.stiffness peak_dat.damping]
 
-%close(fig1)
-%close(fig2)
-%close(fig3)
+findex_name =  list(file_index,:);
+findex_name(length(list(file_index,:))-3 : length(list(file_index,:))) = '.mat'
+
+save (findex_name, 'peak_dat')
+close(fig1)
+close(fig2)
+close(fig3)

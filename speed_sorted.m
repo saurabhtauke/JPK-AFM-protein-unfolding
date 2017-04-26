@@ -87,14 +87,13 @@ std_stiff = std(stiff_peaks);
 avg_damp = mean(damp_peaks);
 std_damp = std(damp_peaks);
 
-findex = input('input a nuumber to index...');
-% frr =  input('input frequency')
-fname = ['avg_std' num2str(findex) '.mat'];
+frequency =  input('input frequency...');
+pulling_speed = input('input pulling speed...');
+fname = ['avg_std' num2str(pulling_speed) '.mat'];
 path = 'D:\saurabh\Data analysis\TEMP DELETE\smaol\';
-filen = [path fname];
+filen = [path num2str(frequency) fname];
 
-save (filen,'avg_force','std_force','avg_stiff','std_stiff','avg_damp','std_damp')
-findex = findex+1;
+save (filen,'frequency','pulling_speed','avg_force','std_force','avg_stiff','std_stiff','avg_damp','std_damp')
 
 %% plotting
 
